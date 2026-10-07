@@ -1,0 +1,7 @@
+import{describe,expect,it}from'vitest'
+import{financialReceiptHtml,kitchenTicketHtml,restaurantTicketHtml,saleReceiptHtml,type SaleReceipt}from'./printing'
+describe('ticket',()=>{it('affiche les montants et neutralise le HTML',()=>{const receipt={settings:{nom:'MG DELICES',pied_ticket:'Merci',largeur_ticket:80},vente:{numero:'V-1',created_at:'2026-10-07T10:00:00Z',sous_total:1000,remise:0,total_final:1000,montant_paye:500,reste_a_payer:500},caissier:'A',lignes:[{quantite:1,nom_produit:'<script>',prix_unitaire:1000,total_ligne:1000}],paiements:[{mode:'especes',montant:500}]}as SaleReceipt;const html=saleReceiptHtml(receipt);expect(html).toContain('Reste');expect(html).toContain('&lt;script&gt;');expect(html).not.toContain('<script>')})})
+describe('documents restaurant et financiers',()=>{
+  it('sépare ticket client et bon cuisine',()=>{const base={numero:'C-1',table:'Table 2',date:'2026-10-07T10:00:00Z'};expect(restaurantTicketHtml({...base,serveur:'A',lignes:[{quantite:2,designation:'Plat',prix:500}],total:1000,paye:1000,reste:0})).toContain('Total');const kitchen=kitchenTicketHtml({...base,lignes:[{quantite:2,designation:'Plat',notes:'Sans sel'}]});expect(kitchen).toContain('BON CUISINE');expect(kitchen).not.toContain('F CFA')})
+  it('porte identifiant et référence métier',()=>{const html=financialReceiptHtml({type:'Règlement client',identifiant:'RC-1',reference:'V-1',date:'2026-10-07',montant:500,utilisateur:'Admin'});expect(html).toContain('RC-1');expect(html).toContain('V-1')})
+})

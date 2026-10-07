@@ -1,0 +1,10 @@
+import{useState}from'react'
+import{PageHeader}from'../../components/PageHeader'
+import{supabase,isSupabaseConfigured}from'../../lib/supabase'
+import{APP_IDENTIFIER,APP_VERSION}from'../../lib/version'
+import{useAuth}from'../../contexts/AuthContext'
+import{userMessageFromError}from'../../lib/errors'
+
+export function DiagnosticPage(){const{user,profile}=useAuth(),[result,setResult]=useState('Non exécuté'),[checkedAt,setCheckedAt]=useState<string|null>(null),[busy,setBusy]=useState(false)
+const check=async()=>{setBusy(true);const started=performance.now();const[{error:profileError},{error:rpcError},session]=await Promise.all([supabase.from('profiles').select('id').eq('id',user?.id||'').maybeSingle(),supabase.rpc('get_restaurant_settings'),supabase.auth.getSession()]);const failure=profileError||rpcError||session.error;setResult(failure?userMessageFromError(failure):`Connexion opérationnelle (${Math.round(performance.now()-started)} ms)`);setCheckedAt(new Date().toLocaleString('fr-FR'));setBusy(false)}
+return <><PageHeader title="Diagnostic administration" description="Contrôles non destructifs, sans exposition de secrets."/><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{[['Version',APP_VERSION],['Identifiant',APP_IDENTIFIER],['Environnement',import.meta.env.PROD?'production':'développement'],['Configuration Supabase',isSupabaseConfigured?'présente':'incomplète'],['Utilisateur',user?.email||'—'],['Rôle',profile?.role||'—'],['État navigateur',navigator.onLine?'en ligne':'hors ligne'],['Dernière vérification',checkedAt||'Jamais'],['Migrations attendues','Jusqu’à 20261007000300']].map(([label,value])=><div key={label} className="card p-5"><p className="text-sm text-slate-500">{label}</p><b>{value}</b></div>)}</div><section className="card mt-5 p-5"><h2 className="font-black">Tests de connexion</h2><p className="my-3">{result}</p><button className="btn-primary" disabled={busy} onClick={()=>void check()}>{busy?'Vérification…':'Exécuter les contrôles'}</button></section></>}

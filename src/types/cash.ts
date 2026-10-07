@@ -1,0 +1,6 @@
+export type CashMovementType='ouverture'|'vente'|'depense'|'paiement_fournisseur'|'entree_manuelle'|'sortie_manuelle'|'ajustement_cloture'
+export interface CashMovement{id:string;type_mouvement:CashMovementType;sens:'entree'|'sortie';montant:number;reference_type:string|null;reference_id:string|null;libelle:string;created_at:string}
+export interface CashSummary{id:string;date_session:string;opened_at:string;fond_ouverture:number;statut:'ouverte'|'cloturee';closed_at:string|null;solde_compte:number|null;ecart:number|null;ventes_especes:number;autres_entrees:number;depenses_especes:number;paiements_fournisseurs_especes:number;autres_sorties:number;solde_theorique:number;mouvements:CashMovement[]}
+export interface CashDashboard{caisse_ouverte:boolean;solde_theorique:number;ecart_derniere_cloture:number;depenses_du_jour:number;resultat_operationnel_simplifie:number}
+export interface ExpenseCategory{id:string;code:string;nom:string;actif:boolean;ordre:number}
+export interface Expense{id:string;numero_depense:string;categorie_id:string;categorie_nom:string;libelle:string;montant:number;mode_paiement:string;reference:string|null;note:string|null;date_depense:string;created_by_name:string;created_at:string}

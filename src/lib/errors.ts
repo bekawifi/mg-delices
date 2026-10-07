@@ -1,0 +1,62 @@
+export function userMessageFromError(error: unknown, fallback = 'Une erreur est survenue. Veuillez réessayer.') {
+  const raw = typeof error === 'string'
+    ? error
+    : error && typeof error === 'object' && 'message' in error && typeof error.message === 'string'
+      ? error.message
+      : ''
+  const message = raw.toLowerCase()
+
+  const isNetworkError = message.includes('failed to fetch') || message.includes('network') || message.includes('fetch')
+  if (typeof navigator !== 'undefined' && !navigator.onLine && (!message || isNetworkError)) return 'Connexion Internet indisponible.'
+  if (message.includes('sqlstate') || message.includes('postgres') || message.includes('syntax error') || message.includes('stack trace')) return fallback
+  if (message.includes('conflict') || message.includes('409')) return 'Les données ont changé. Actualisez la page puis réessayez.'
+  if (message.includes('service unavailable') || message.includes('502') || message.includes('503') || message.includes('504')) return 'Le serveur est temporairement indisponible. Réessayez dans quelques instants.'
+
+  if (message.includes('quantité retournée supérieure') || message.includes('quantite retournee superieure')) return 'La quantité retournée dépasse la quantité vendue.'
+  if (message.includes('ligne a déjà été totalement retournée') || message.includes('ligne a deja ete totalement retournee')) return 'Cette ligne a déjà été totalement retournée.'
+  if (message.includes('vente déjà annulée') || message.includes('vente deja annulee') || message.includes('totalement retournée')) return 'Cette vente est déjà annulée ou totalement retournée.'
+  if (message.includes('aucun montant remboursable')) return 'Aucun montant n’est disponible pour ce remboursement.'
+  if (message.includes('caisse fermée pour remboursement') || message.includes('caisse fermee pour remboursement')) return 'Ouvrez une session de caisse avant un remboursement en espèces.'
+  if (message.includes('stock insuffisant pour retour fournisseur')) return 'Le stock disponible est insuffisant pour ce retour fournisseur.'
+  if (message.includes('achat non réceptionné') || message.includes('achat non receptionne')) return 'Seul un achat réceptionné peut faire l’objet d’un retour.'
+  if (message.includes('retour fournisseur supérieur') || message.includes('retour fournisseur superieur')) return 'La quantité cumulée retournée dépasse la quantité reçue.'
+  if (message.includes('ligne de retour en double')) return 'Une même ligne ne peut apparaître deux fois dans le retour.'
+  if (message.includes('ancienne vente') && message.includes('reintegre')) return 'Le stock de cette ancienne vente ne peut pas être réintégré automatiquement. Effectuez le retour sans reprise stock ou utilisez un ajustement de stock contrôlé.'
+  if (message.startsWith('stock insuffisant :')) return raw
+  if (message.includes('précision') || message.includes('precision')) return 'La quantité ne respecte pas la précision autorisée pour cette unité.'
+  if (message.includes('motif obligatoire')) return 'Un motif est obligatoire pour enregistrer cet ajustement.'
+  if (message.includes('aucune caisse')) return 'Aucune caisse n’est ouverte.'
+  if (message.includes('caisse est déjà ouverte') || message.includes('caisse est deja ouverte')) return 'Une caisse est déjà ouverte.'
+  if (message.includes('caisse est déjà clôturée') || message.includes('caisse est deja cloturee')) return 'Cette caisse est déjà clôturée.'
+  if (message.includes('montant ou dépense invalide') || message.includes('ajustement invalide')) return 'Le montant ou les informations saisies sont invalides.'
+  if (message.includes('fournisseur inactif')) return 'Ce fournisseur est inactif et ne peut pas être utilisé pour un nouvel achat.'
+  if (message.includes('fournisseurs_code_key')) return 'Ce code fournisseur est déjà utilisé.'
+  if (message.includes('matière première inactive') || message.includes('matiere premiere inactive')) return 'Une matière première de cet achat est inactive ou introuvable.'
+  if (message.includes('matière première est déjà présente') || message.includes('matiere premiere est deja presente')) return 'Cette matière première est déjà présente dans l’achat.'
+  if (message.includes('achat déjà réceptionné ne peut pas être annulé') || message.includes('achat deja receptionne ne peut pas etre annule')) return 'Un achat déjà réceptionné ne peut pas être annulé directement.'
+  if (message.includes('achat déjà réceptionné') || message.includes('achat deja receptionne')) return 'Cet achat a déjà été réceptionné.'
+  if (message.includes('achat annulé') || message.includes('achat annule')) return 'Cet achat est annulé.'
+  if (message.includes('achat déjà soldé') || message.includes('achat deja solde')) return 'Cet achat est déjà entièrement soldé.'
+  if (message.includes('montant supérieur au reste') || message.includes('montant superieur au reste') || message.includes('montant dépasse le reste') || message.includes('montant depasse le reste')) return 'Le montant dépasse le reste dû.'
+  if (message.includes('client est obligatoire')) return 'Sélectionnez un client pour une vente à crédit.'
+  if (message.includes('client introuvable ou inactif')) return 'Ce client est introuvable ou désactivé.'
+  if (message.includes('plafond de crédit') || message.includes('plafond de credit')) return 'Le plafond de crédit disponible de ce client est insuffisant.'
+  if (message.includes('vente est déjà soldée') || message.includes('vente est deja soldee')) return 'Cette vente est déjà entièrement réglée.'
+  if (message.includes('règlement invalide') || message.includes('reglement invalide')) return 'Les informations du règlement sont invalides.'
+  if (message.includes('client utilise déjà') || message.includes('client utilise deja')) return 'Ce téléphone ou cet email est déjà associé à un client.'
+  if (message.includes('seul un achat brouillon')) return 'Seul un achat encore en brouillon peut être modifié.'
+  if (message.includes('achat sans ligne') || message.includes('ligne d’achat invalide') || message.includes("ligne d''achat invalide")) return 'Les lignes de cet achat sont invalides.'
+  if (isNetworkError) return 'Connexion au serveur impossible. Vérifiez votre réseau puis réessayez.'
+  if (message.includes('jwt') || message.includes('session') || message.includes('token') || message.includes('authentification requise')) return 'Votre session a expiré. Reconnectez-vous.'
+  if (message.includes('inactif') || message.includes('inactive')) return 'Votre compte est désactivé. Contactez un administrateur.'
+  if (message.includes('introuvable') || message.includes('indisponible')) return 'Un produit du panier est indisponible. Actualisez la caisse et réessayez.'
+  if (message.includes('table déjà occupée') || message.includes('table deja occupee')) return 'Cette table est déjà occupée. Actualisez la liste des tables.'
+  if (message.includes('commande clôturée') || message.includes('commande cloturee')) return 'Cette commande est déjà clôturée et ne peut plus être modifiée.'
+  if (message.includes('commande déjà encaissée') || message.includes('commande deja encaissee')) return 'Cette commande a déjà été encaissée.'
+  if (message.includes('transition cuisine') || message.includes('pas encore prêt') || message.includes('pas encore pret')) return 'Cette action n’est plus disponible pour cet article. Actualisez la cuisine.'
+  if (message.includes('montant reçu insuffisant') || message.includes('montant recu insuffisant')) return 'Le montant reçu est insuffisant.'
+  if (message.includes('paiement') || message.includes('montant reçu invalide') || message.includes('montant recu invalide')) return 'Les informations de paiement sont invalides.'
+  if (message.includes('idempotence') || message.includes('duplicate') || message.includes('unique')) return 'Cette vente a déjà été enregistrée. Consultez les dernières ventes avant de recommencer.'
+  if (message.includes('permission') || message.includes('policy') || message.includes('row-level security') || message.includes('not allowed') || message.includes('non autorisée') || message.includes('non autorisee')) return 'Vous n’avez pas l’autorisation d’effectuer cette opération.'
+  return fallback
+}

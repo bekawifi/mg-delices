@@ -1,0 +1,21 @@
+[package]
+name = "mg-delices"
+version = "1.0.0"
+description = "MG DELICES - gestion de restaurant"
+authors = ["MG DELICES"]
+edition = "2021"
+
+[lib]
+name = "mg_delices_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-updater = "=2.9.0"

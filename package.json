@@ -1,0 +1,48 @@
+{
+  "name": "mg-delices",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "node scripts/tauri-build.mjs",
+    "version:check": "node scripts/check-versions.mjs",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:supabase": "node --env-file=.env.test.local supabase/tests/step1b.integration.mjs",
+    "test:supabase:step2": "node --env-file=.env.test.local supabase/tests/step2.integration.mjs",
+    "test:supabase:step3": "node --env-file=.env.test.local supabase/tests/step3.integration.mjs",
+    "test:supabase:step4": "node --env-file=.env.test.local supabase/tests/step4.integration.mjs",
+    "test:supabase:step5": "node --env-file=.env.test.local supabase/tests/step5.integration.mjs",
+    "test:supabase:step6": "node --env-file=.env.test.local supabase/tests/step6.integration.mjs",
+    "test:supabase:step7": "node --env-file=.env.test.local supabase/tests/step7.integration.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "@tauri-apps/api": "^2.12.1",
+    "@tauri-apps/plugin-dialog": "^2.8.1",
+    "@tauri-apps/plugin-fs": "^2.6.0",
+    "@tauri-apps/plugin-updater": "^2.9.0",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.9.3",
+    "write-excel-file": "^4.1.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.1",
+    "vitest": "^2.1.8"
+  }
+}

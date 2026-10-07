@@ -1,0 +1,11 @@
+{
+  "version": "1.0.1",
+  "notes": "Corrections et améliorations.",
+  "pub_date": "2026-10-07T00:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "CONTENU_DU_FICHIER_SIG",
+      "url": "URL_HTTPS_DE_L_ARTEFACT_UPDATER"
+    }
+  }
+}
