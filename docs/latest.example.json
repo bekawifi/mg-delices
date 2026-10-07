@@ -5,7 +5,7 @@
   "platforms": {
     "windows-x86_64": {
       "signature": "CONTENU_DU_FICHIER_SIG",
-      "url": "URL_HTTPS_DE_L_ARTEFACT_UPDATER"
+      "url": "https://github.com/bekawifi/mg-delices/releases/download/v1.0.1/MG%20DELICES_1.0.1_x64-setup.exe"
     }
   }
 }

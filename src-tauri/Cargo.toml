@@ -1,6 +1,6 @@
 [package]
 name = "mg-delices"
-version = "1.0.0"
+version = "1.0.1"
 description = "MG DELICES - gestion de restaurant"
 authors = ["MG DELICES"]
 edition = "2021"
