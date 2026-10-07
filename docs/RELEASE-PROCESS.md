@@ -17,12 +17,12 @@ npm.cmd run version:check
 5. Charger la clé privée dans les variables de la session PowerShell conformément à `TAURI-SIGNING.md`.
 6. Exécuter `npm.cmd run tauri:build`.
 7. Récupérer l’installateur `.exe` et son `.sig` dans `src-tauri/target/release/bundle/nsis/`.
-8. Copier le contenu du `.sig` et construire `latest.json` depuis `docs/latest.example.json`.
+8. Générer `latest.json` avec `npm.cmd run release:latest -- --sig <fichier.sig> --notes <notes> --pub-date <date-RFC3339>`.
 9. Créer manuellement une GitHub Release et y joindre l’installateur et `latest.json`.
 10. Sur une machine de test équipée de la base 1.0.0 correctement configurée, rechercher puis installer la mise à jour.
 11. Vérifier le démarrage, l’absence de console noire, les fonctions principales et la version 1.0.1 affichée.
 
-Aucune release ni aucun workflow de publication automatique n’est créé à cette étape, car le dépôt GitHub final n’est pas connu.
+Aucune release ni aucun workflow de publication automatique n’est déclenché par cette procédure. Le dépôt public cible est `https://github.com/bekawifi/mg-delices`, branche `main`.
 
 ## `latest.json`
 
@@ -36,7 +36,7 @@ Le manifeste suit le format Tauri 2. Pour Windows x64, utiliser la clé `windows
   "platforms": {
     "windows-x86_64": {
       "signature": "CONTENU_DU_FICHIER_SIG",
-      "url": "URL_HTTPS_DE_L_ARTEFACT_UPDATER"
+      "url": "https://github.com/bekawifi/mg-delices/releases/download/v1.0.1/MG%20DELICES_1.0.1_x64-setup.exe"
     }
   }
 }

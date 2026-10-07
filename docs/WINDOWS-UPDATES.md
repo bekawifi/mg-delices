@@ -1,6 +1,6 @@
 # Mises à jour Windows MG DELICES
 
-Canal prévu : `stable`. Le mécanisme Tauri 2 est préparé, mais les mises à jour restent **inactives** tant que la vraie clé publique et un endpoint HTTPS réel ne remplacent pas les placeholders de `src-tauri/tauri.conf.json`.
+Canal : `stable`. La clé publique réelle et l’endpoint GitHub HTTPS sont configurés dans `src-tauri/tauri.conf.json`. Aucune release n’est encore publiée.
 
 ## Comportement utilisateur
 
@@ -12,12 +12,17 @@ Canal prévu : `stable`. Le mécanisme Tauri 2 est préparé, mais les mises à 
 
 Les erreurs réseau, manifeste, téléchargement, installation et signature sont présentées avec un message contrôlé. Une signature invalide bloque toujours l’installation.
 
-## Configuration à terminer
+## Configuration de publication
 
-1. Générer manuellement la paire de clés en suivant `TAURI-SIGNING.md`.
-2. Remplacer `__MG_DELICES_UPDATER_PUBLIC_KEY__` par le contenu de la clé publique — jamais par son chemin.
-3. Choisir le dépôt GitHub final et ajouter uniquement alors l’endpoint HTTPS : `https://github.com/<propriétaire>/<dépôt>/releases/latest/download/latest.json`.
-4. Reconstruire et redistribuer une version de base contenant cette vraie configuration avant de tester une mise à jour ultérieure.
+L’endpoint stable est `https://github.com/bekawifi/mg-delices/releases/latest/download/latest.json`.
+
+Pour générer le manifeste après le build signé :
+
+```powershell
+npm.cmd run release:latest -- --sig "src-tauri\target\release\bundle\nsis\MG DELICES_1.0.1_x64-setup.exe.sig" --notes "Mise à jour de test 1.0.1." --pub-date "2026-10-07T00:00:00Z"
+```
+
+Le script lit uniquement le `.sig`, utilise la version courante et écrit `latest.json` avec l’URL GitHub Release attendue.
 
 Ne pas activer `dangerousInsecureTransportProtocol` ni `allowDowngrades`.
 
@@ -52,6 +57,6 @@ Sans clé privée, `npm.cmd run tauri:build` applique une surcharge locale qui d
 - L’installation ne démarre qu’après clic.
 - Une signature invalide empêche l’installation.
 
-## Point important pour la version 1.0.0
+## Point important pour la version de base
 
-L’installateur 1.0.0 déjà créé ne contient pas encore une vraie clé publique ni un endpoint actif. Il peut servir aux tests locaux, mais ne constitue pas une base distribuable pour une chaîne d’updates réelle. Avant diffusion sur d’autres PC, reconstruire la version de base avec la vraie clé publique et l’endpoint final.
+Pour tester la mise à jour 1.0.0 vers 1.0.1, la version 1.0.0 installée sur la machine cliente doit déjà contenir la même clé publique et l’endpoint stable. Un ancien installateur 1.0.0 créé avant cette configuration ne pourra pas découvrir la release.
