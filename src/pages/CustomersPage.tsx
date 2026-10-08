@@ -2,23 +2,23 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { CreditCard, Eye, LoaderCircle, Plus, Search, UserRound, X } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { useAuth } from '../contexts/AuthContext'
+import { EMPTY_CUSTOMER_FORM, saveCustomerRecord } from '../lib/customers'
 import { userMessageFromError } from '../lib/errors'
 import { formatDateTime, formatMoney } from '../lib/format'
 import { supabase } from '../lib/supabase'
 import type { PaymentMethod } from '../types/database'
 import type { Customer, CustomerDetail, CustomerSale } from '../types/customers'
 
-const emptyForm={nom:'',telephone:'',email:'',adresse:'',plafond_credit:0,actif:true}
 const paymentLabels:Record<PaymentMethod,string>={especes:'Espèces',orange_money:'Orange Money',moov_money:'Moov Money',autre:'Autre'}
 
 export function CustomersPage(){
-  const{profile}=useAuth(),[customers,setCustomers]=useState<Customer[]>([]),[search,setSearch]=useState(''),[debtOnly,setDebtOnly]=useState(false),[loading,setLoading]=useState(true),[error,setError]=useState(''),[editing,setEditing]=useState<Customer|null|undefined>(undefined),[form,setForm]=useState(emptyForm),[detail,setDetail]=useState<CustomerDetail|null>(null),[paying,setPaying]=useState<CustomerSale|null>(null),[payment,setPayment]=useState({montant:0,mode:'especes' as PaymentMethod,reference:'',note:''}),[busy,setBusy]=useState(false)
+  const{profile}=useAuth(),[customers,setCustomers]=useState<Customer[]>([]),[search,setSearch]=useState(''),[debtOnly,setDebtOnly]=useState(false),[loading,setLoading]=useState(true),[error,setError]=useState(''),[editing,setEditing]=useState<Customer|null|undefined>(undefined),[form,setForm]=useState(EMPTY_CUSTOMER_FORM),[detail,setDetail]=useState<CustomerDetail|null>(null),[paying,setPaying]=useState<CustomerSale|null>(null),[payment,setPayment]=useState({montant:0,mode:'especes' as PaymentMethod,reference:'',note:''}),[busy,setBusy]=useState(false)
   const canManage=profile?.role==='admin'||profile?.role==='gestionnaire',canPay=canManage||profile?.role==='caissier'
   const load=async()=>{setLoading(true);const{data,error:e}=await supabase.rpc('get_customers_overview',{p_search:null,p_only_with_debt:false});if(e)setError(userMessageFromError(e,'Impossible de charger les clients.'));else setCustomers((data||[])as Customer[]);setLoading(false)}
   useEffect(()=>{void load()},[])
   const filtered=useMemo(()=>customers.filter(c=>(!debtOnly||Number(c.encours_credit)>0)&&[c.nom,c.numero,c.telephone||''].some(v=>v.toLowerCase().includes(search.toLowerCase()))),[customers,search,debtOnly])
-  const openForm=(customer:Customer|null)=>{setEditing(customer);setForm(customer?{nom:customer.nom,telephone:customer.telephone||'',email:customer.email||'',adresse:customer.adresse||'',plafond_credit:Number(customer.plafond_credit),actif:customer.actif}:emptyForm);setError('')}
-  const save=async(e:FormEvent)=>{e.preventDefault();setBusy(true);const{error:rpcError}=await supabase.rpc('save_customer',{p_id:editing?.id||null,p_nom:form.nom,p_telephone:form.telephone||null,p_email:form.email||null,p_adresse:form.adresse||null,p_plafond_credit:form.plafond_credit,p_actif:form.actif});if(rpcError)setError(userMessageFromError(rpcError,'Le client n’a pas pu être enregistré.'));else{setEditing(undefined);await load()}setBusy(false)}
+  const openForm=(customer:Customer|null)=>{setEditing(customer);setForm(customer?{nom:customer.nom,telephone:customer.telephone||'',email:customer.email||'',adresse:customer.adresse||'',plafond_credit:Number(customer.plafond_credit),actif:customer.actif}:{...EMPTY_CUSTOMER_FORM});setError('')}
+  const save=async(e:FormEvent)=>{e.preventDefault();setBusy(true);try{await saveCustomerRecord(form,editing?.id||null);setEditing(undefined);await load()}catch(rpcError){setError(userMessageFromError(rpcError,'Le client n’a pas pu être enregistré.'))}finally{setBusy(false)}}
   const openDetail=async(id:string)=>{setError('');const{data,error:e}=await supabase.rpc('get_customer_detail',{p_client_id:id});if(e)setError(userMessageFromError(e,'Impossible de charger le client.'));else setDetail(data as CustomerDetail)}
   const pay=async(e:FormEvent)=>{e.preventDefault();if(!paying)return;setBusy(true);const{error:rpcError}=await supabase.rpc('add_customer_payment',{p_vente_id:paying.id,p_montant:payment.montant,p_mode_paiement:payment.mode,p_idempotency_key:crypto.randomUUID(),p_reference:payment.reference||null,p_note:payment.note||null});if(rpcError)setError(userMessageFromError(rpcError,'Le règlement n’a pas pu être enregistré.'));else{const id=detail?.id;setPaying(null);setPayment({montant:0,mode:'especes',reference:'',note:''});await load();if(id)await openDetail(id)}setBusy(false)}
   return <><PageHeader title="Clients" description="Créances, plafonds de crédit, règlements et fidélité." action={canManage?<div className="flex gap-2"><a className="btn-secondary" href="/retours">Retours clients</a><button className="btn-primary" onClick={()=>openForm(null)}><Plus size={18}/>Nouveau client</button></div>:undefined}/>
