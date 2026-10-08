@@ -141,4 +141,4 @@ La migration additive `20261006000500_cash_expenses_closing.sql` ajoute les dép
 npm.cmd run test:supabase:step5
 ```
 
-Une caisse ouverte devient obligatoire uniquement pour les flux en espèces. Les paiements mobiles et virements restent séparés de la caisse physique.
+Une session de caisse ouverte est obligatoire pour toute opération financière, quel que soit le mode de paiement. Seuls les paiements en espèces alimentent le journal et le solde physique de caisse ; les autres modes restent rattachés à la session sans créer de mouvement d'espèces.

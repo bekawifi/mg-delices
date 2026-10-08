@@ -75,7 +75,29 @@ assert.equal(Number(receipt.vente.total_final), 1200);
 assert.equal(Number(receipt.vente.monnaie_rendue), 300);
 
 console.log("4/7 Recherche par date");
-const byDate = await search(admin, { p_date: sale.created_at.slice(0, 10), p_limit: 50 });
+const filterDate = sale.created_at.slice(0, 10);
+const startUtc = new Date(`${filterDate}T00:00:00.000Z`);
+const endUtc = new Date(startUtc);
+endUtc.setUTCDate(endUtc.getUTCDate() + 1);
+const datePage = await search(admin, { p_date: filterDate, p_limit: 50 });
+console.log("Diagnostic recherche par date", {
+  sale_id: sale.id,
+  sale_created_at: sale.created_at,
+  date_filtre: filterDate,
+  convention_timezone: "UTC (date ISO de created_at ; PostgreSQL Supabase en UTC)",
+  borne_debut_inclusive: startUtc.toISOString(),
+  borne_fin_exclusive: endUtc.toISOString(),
+  predicat_rpc_actuel: "created_at::date = p_date",
+  total_correspondant: datePage.total,
+  lignes_retournees: datePage.rows.map((row) => ({ id: row.id, created_at: row.created_at })),
+});
+// Le filtre unique empêche les ventes plus récentes du même jour d'évincer
+// la vente cible de la première page, tout en validant simultanément la date.
+const byDate = await search(admin, {
+  p_date: filterDate,
+  p_search: sale.numero,
+  p_limit: 50,
+});
 assert.ok(byDate.rows.some((row) => row.id === sale.id));
 
 console.log("5/7 Recherche par caissier et mode de paiement");
