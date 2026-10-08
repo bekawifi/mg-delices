@@ -1,5 +1,16 @@
 import type { StockStatus } from '../types/inventory'
 
+export function quantityStep(precision: number) {
+  const normalized = Math.min(6, Math.max(0, Math.trunc(precision)))
+  return 10 ** -normalized
+}
+
+export function isValidStockQuantity(value: number, precision: number, allowZero = false) {
+  if (!Number.isFinite(value) || (allowZero ? value < 0 : value <= 0)) return false
+  const normalized = Math.min(6, Math.max(0, Math.trunc(precision)))
+  return value === Number(value.toFixed(normalized))
+}
+
 export function stockValue(quantity: number, unitCost: number) { return quantity * unitCost }
 
 export function weightedAverageCost(currentQuantity: number, currentCost: number, addedQuantity: number, addedCost: number) {
