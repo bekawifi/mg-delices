@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capacités minimales de MG DELICES",
+  "description": "Capacités minimales de RestoPRO",
   "windows": ["main"],
   "permissions": [
     "core:default",

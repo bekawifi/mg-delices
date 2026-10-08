@@ -7,6 +7,7 @@ export function userMessageFromError(error: unknown, fallback = 'Une erreur est 
   const message = raw.toLowerCase()
 
   const isNetworkError = message.includes('failed to fetch') || message.includes('network') || message.includes('fetch')
+  if (message.includes('veuillez ouvrir une session de caisse')) return 'Veuillez ouvrir une session de caisse avant d’effectuer une opération financière.'
   if (typeof navigator !== 'undefined' && !navigator.onLine && (!message || isNetworkError)) return 'Connexion Internet indisponible.'
   if (message.includes('sqlstate') || message.includes('postgres') || message.includes('syntax error') || message.includes('stack trace')) return fallback
   if (message.includes('conflict') || message.includes('409')) return 'Les données ont changé. Actualisez la page puis réessayez.'
