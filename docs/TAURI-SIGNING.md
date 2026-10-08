@@ -1,15 +1,8 @@
 # Signature updater Tauri
 
-## Génération manuelle
+## Paire existante obligatoire
 
-Codex ne génère pas la clé. Dans PowerShell, l’utilisateur propriétaire doit exécuter manuellement :
-
-```powershell
-New-Item -ItemType Directory -Force "$env:USERPROFILE\.tauri"
-npm.cmd run tauri signer generate -- -w "$env:USERPROFILE\.tauri\mg-delices.key"
-```
-
-La commande crée la clé privée et sa clé publique. La clé privée peut être protégée par un mot de passe. Copier le **contenu public** dans `plugins.updater.pubkey` de `src-tauri/tauri.conf.json`. Ne jamais y mettre le chemin de la clé.
+RestoPRO conserve strictement la paire updater déjà utilisée par MG DELICES. Ne jamais exécuter `tauri signer generate`, ne jamais remplacer `plugins.updater.pubkey` et ne jamais créer une nouvelle paire pour cette lignée. La clé privée existante reste hors du dépôt ; seul son propriétaire la charge dans une session de build autorisée.
 
 ## Stockage
 

@@ -1,4 +1,4 @@
-# Mises à jour Windows MG DELICES
+# Mises à jour Windows RestoPRO
 
 Canal : `stable`. La clé publique réelle et l’endpoint GitHub HTTPS sont configurés dans `src-tauri/tauri.conf.json`. Aucune release n’est encore publiée.
 
@@ -14,12 +14,12 @@ Les erreurs réseau, manifeste, téléchargement, installation et signature sont
 
 ## Configuration de publication
 
-L’endpoint stable est `https://github.com/bekawifi/mg-delices/releases/latest/download/latest.json`.
+L’endpoint actuellement configuré reste temporairement `https://github.com/bekawifi/mg-delices/releases/latest/download/latest.json` afin de ne pas casser les installations existantes. Il ne devra être remplacé par `https://github.com/bekawifi/restopro/releases/latest/download/latest.json` qu’après le renommage réel du dépôt.
 
 Pour générer le manifeste après le build signé :
 
 ```powershell
-npm.cmd run release:latest -- --sig "src-tauri\target\release\bundle\nsis\MG DELICES_1.0.1_x64-setup.exe.sig" --notes "Mise à jour de test 1.0.1." --pub-date "2026-10-07T00:00:00Z"
+npm.cmd run release:latest -- --sig "src-tauri\target\release\bundle\nsis\RestoPRO_1.1.0_x64-setup.exe.sig" --notes "RestoPRO 1.1.0." --pub-date "2026-10-08T00:00:00Z"
 ```
 
 Le script lit uniquement le `.sig`, utilise la version courante et écrit `latest.json` avec l’URL GitHub Release attendue.
@@ -30,8 +30,8 @@ Ne pas activer `dangerousInsecureTransportProtocol` ni `allowDowngrades`.
 
 Avec `bundle.createUpdaterArtifacts: true` et les variables de signature présentes, le build NSIS Tauri 2 produit dans `src-tauri/target/release/bundle/nsis/` :
 
-- `MG DELICES_<version>_x64-setup.exe` : installateur normal et artefact updater v2 ;
-- `MG DELICES_<version>_x64-setup.exe.sig` : signature à copier dans `latest.json`.
+- `RestoPRO_<version>_x64-setup.exe` : installateur normal et artefact updater v2 ;
+- `RestoPRO_<version>_x64-setup.exe.sig` : signature à copier dans `latest.json`.
 
 Le contenu du fichier `.sig`, et non son chemin, va dans le champ `signature`.
 
@@ -51,12 +51,12 @@ Sans clé privée, `npm.cmd run tauri:build` applique une surcharge locale qui d
 
 ### Desktop avec endpoint
 
-- Sans nouvelle version : « MG DELICES est à jour ».
+- Sans nouvelle version : « RestoPRO est à jour ».
 - Avec nouvelle version : version et notes visibles.
 - Le téléchargement affiche les octets et le pourcentage lorsque la taille est connue.
 - L’installation ne démarre qu’après clic.
 - Une signature invalide empêche l’installation.
 
-## Point important pour la version de base
+## Point important pour la transition de marque
 
-Pour tester la mise à jour 1.0.0 vers 1.0.1, la version 1.0.0 installée sur la machine cliente doit déjà contenir la même clé publique et l’endpoint stable. Un ancien installateur 1.0.0 créé avant cette configuration ne pourra pas découvrir la release.
+RestoPRO 1.1.0 change d’identifiant Windows. La migration depuis MG DELICES 1.0.1 suit donc la procédure de désinstallation/réinstallation documentée dans `RESTOPRO-DISTRIBUTION.md`, tout en conservant les données Supabase. La clé publique updater existante est conservée et la clé privée ne doit jamais être régénérée ni copiée dans le dépôt.

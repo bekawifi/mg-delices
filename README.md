@@ -1,12 +1,12 @@
-# MG DELICES
+# RestoPRO
 
 Application responsive de gestion de restaurant (React, TypeScript, Vite, Supabase et Tailwind CSS).
 
-Version actuelle : **1.0.0**.
+Version actuelle : **1.1.0**.
 
-## Application Windows MG DELICES
+## Application Windows RestoPRO
 
-MG DELICES partage une seule base React/TypeScript entre le navigateur et la coque Windows Tauri 2. L’identifiant définitif est `com.mgdelices.desktop`. La navigation utilise l’historique Web dans le navigateur et un routage par hash dans Tauri afin que le rechargement d’une route ne produise pas de page blanche.
+RestoPRO partage une seule base React/TypeScript entre le navigateur et la coque Windows Tauri 2. L’identifiant de cette nouvelle lignée est `com.restopro.desktop`. Le logiciel est générique ; l’identité de chaque restaurant vient de `restaurant_settings`. Voir `docs/RESTOPRO-DISTRIBUTION.md` pour l’onboarding et la migration depuis MG DELICES 1.0.1.
 
 ### Prérequis Windows
 

@@ -1,4 +1,4 @@
-# Checklist production MG DELICES
+# Checklist production RestoPRO
 
 ## Application et données
 
@@ -37,7 +37,7 @@
 ## Protocole de test d’installation
 
 1. Construire l’installateur.
-2. Installer MG DELICES.
+2. Installer RestoPRO.
 3. Lancer et connecter un administrateur.
 4. Tester tableau de bord, caisse, tables, cuisine, clients, stock, fournisseurs et rapports.
 5. Tester exports et impression.
