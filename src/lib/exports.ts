@@ -11,7 +11,7 @@ async function saveBytes(bytes:Uint8Array,name:string,filters:{name:string;exten
   const blob=new Blob([bytes],{type:'application/octet-stream'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;link.click();URL.revokeObjectURL(url)
 }
 export async function exportCsv(domain:string,from:string,to:string,rows:Row[]){await saveBytes(new TextEncoder().encode(rowsToCsv(rows)),reportFileName(domain,from,to,'csv'),[{name:'CSV UTF-8',extensions:['csv']}])}
-export async function exportXlsx(domain:string,from:string,to:string,rows:Row[]){
+export async function exportXlsx(domain:string,from:string,to:string,rows:Row[],restaurantName:string,showRestoProBranding:boolean){
   const{default:writeXlsxFile}=await import('write-excel-file/browser')
   const columns=Object.keys(rows[0]||{})
   const totalRow=columns.map((column,index)=>{
@@ -20,7 +20,7 @@ export async function exportXlsx(domain:string,from:string,to:string,rows:Row[])
     return{value:index===0?'Totaux':'',type:String,fontWeight:'bold' as const}
   })
   const data=[
-    [{value:`MG DELICES · ${domain.toUpperCase()}`,fontWeight:'bold' as const,fontSize:16}],
+    [{value:`${restaurantName} · ${domain.toUpperCase()}`,fontWeight:'bold' as const,fontSize:16}],
     [{value:`Période du ${from} au ${to}`}],
     [],
     columns.map(value=>({value,fontWeight:'bold' as const,backgroundColor:'#DCFCE7'})),
@@ -30,10 +30,11 @@ export async function exportXlsx(domain:string,from:string,to:string,rows:Row[])
       if(typeof value==='boolean')return{value,type:Boolean}
       return{value:text(value),type:String}
     })),
-    totalRow
+    totalRow,
+    ...(showRestoProBranding?[[{value:'Généré avec RestoPRO',fontStyle:'italic' as const}]]:[])
   ]
   const file=writeXlsxFile(data,{sheet:'Rapport',columns:columns.map(column=>({width:Math.max(12,Math.min(35,column.length+8))}))})
   const blob=await file.toBlob()
   await saveBytes(new Uint8Array(await blob.arrayBuffer()),reportFileName(domain,from,to,'xlsx'),[{name:'Excel',extensions:['xlsx']}])
 }
-export async function exportPdf(title:string,from:string,to:string,rows:Row[],user:string){const{jsPDF}=await import('jspdf');const pdf=new jsPDF({unit:'mm',format:'a4'});pdf.setFontSize(18);pdf.text('MG DELICES',14,16);pdf.setFontSize(12);pdf.text(title,14,24);pdf.setFontSize(9);pdf.text(`Période : ${from} au ${to} · Imprimé le ${new Date().toLocaleString('fr-FR')} · ${user}`,14,31);let y=40;for(const row of rows.slice(0,120)){const line=Object.entries(row).map(([k,v])=>`${k}: ${text(v)}`).join('  |  ');const parts=pdf.splitTextToSize(line,180);if(y+parts.length*4>285){pdf.addPage();y=15}pdf.text(parts,14,y);y+=parts.length*4+2}const bytes=pdf.output('arraybuffer');await saveBytes(new Uint8Array(bytes),reportFileName(title.toLowerCase().replace(/\s+/g,'-'),from,to,'pdf'),[{name:'PDF',extensions:['pdf']}])}
+export async function exportPdf(title:string,from:string,to:string,rows:Row[],user:string,restaurantName:string,showRestoProBranding:boolean){const{jsPDF}=await import('jspdf');const pdf=new jsPDF({unit:'mm',format:'a4'});pdf.setFontSize(18);pdf.text(restaurantName,14,16);pdf.setFontSize(12);pdf.text(title,14,24);pdf.setFontSize(9);pdf.text(`Période : ${from} au ${to} · Imprimé le ${new Date().toLocaleString('fr-FR')} · ${user}`,14,31);let y=40;for(const row of rows.slice(0,120)){const line=Object.entries(row).map(([k,v])=>`${k}: ${text(v)}`).join('  |  ');const parts=pdf.splitTextToSize(line,180);if(y+parts.length*4>278){if(showRestoProBranding)pdf.text('Généré avec RestoPRO',14,290);pdf.addPage();y=15}pdf.text(parts,14,y);y+=parts.length*4+2}if(showRestoProBranding)pdf.text('Généré avec RestoPRO',14,290);const bytes=pdf.output('arraybuffer');await saveBytes(new Uint8Array(bytes),reportFileName(title.toLowerCase().replace(/\s+/g,'-'),from,to,'pdf'),[{name:'PDF',extensions:['pdf']}])}

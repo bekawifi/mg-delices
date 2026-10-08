@@ -1,3 +1,3 @@
 import{describe,expect,it}from'vitest'
-import{isValidRestaurantSettings}from'./settings'
-describe('paramètres restaurant',()=>{it('accepte uniquement une identité complète et une largeur thermique prévue',()=>{expect(isValidRestaurantSettings({nom:'MG DELICES',devise:'F CFA',pied_ticket:'Merci',largeur_ticket:80})).toBe(true);expect(isValidRestaurantSettings({nom:'',devise:'F CFA',pied_ticket:'Merci',largeur_ticket:72})).toBe(false)})})
+import{DEFAULT_RESTAURANT_SETTINGS,isValidRestaurantSettings,needsRestaurantOnboarding}from'./settings'
+describe('paramètres restaurant',()=>{it('accepte uniquement une identité complète et une largeur thermique prévue',()=>{expect(isValidRestaurantSettings({nom:'Chez Awa',devise:'F CFA',pied_ticket:'Merci',largeur_ticket:80})).toBe(true);expect(isValidRestaurantSettings({nom:'',devise:'F CFA',pied_ticket:'Merci',largeur_ticket:72})).toBe(false)});it('déclenche l’assistant seulement avant la première configuration',()=>{expect(needsRestaurantOnboarding(DEFAULT_RESTAURANT_SETTINGS)).toBe(true);expect(needsRestaurantOnboarding({...DEFAULT_RESTAURANT_SETTINGS,onboarding_completed:true})).toBe(false)})})

@@ -1,3 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-fn main() { mg_delices_lib::run(); }
+fn main() {
+    restopro_lib::run();
+}
