@@ -30,7 +30,7 @@ const RecipesPage = lazy(() =>
   import("./pages/RecipesPage").then((m) => ({ default: m.RecipesPage })),
 );
 const InventoriesPage = lazy(() =>
-  import("./pages/InventoriesPage").then((m) => ({ default: m.InventoriesPage })),
+  import("./pages/InventoryWorkspacePage").then((m) => ({ default: m.InventoryWorkspacePage })),
 );
 const SuppliersPage = lazy(() =>
   import("./pages/SuppliersPage").then((m) => ({ default: m.SuppliersPage })),

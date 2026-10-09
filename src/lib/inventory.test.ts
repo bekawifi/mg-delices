@@ -3,7 +3,10 @@ import {
   aggregateIngredients,
   estimatedGrossMargin,
   getStockStatus,
+  inventoryDifference,
   isValidStockQuantity,
+  matchesInventoryLineFilter,
+  parseInventoryQuantity,
   quantityStep,
   recipeCost,
   stockValue,
@@ -62,5 +65,24 @@ describe("gestion du stock", () => {
       { materialId: "huile", quantity: 0.07 },
       { materialId: "sel", quantity: 0.01 },
     ]);
+  });
+  it("distingue un comptage vide de zero", () => {
+    expect(parseInventoryQuantity("")).toBeNull();
+    expect(parseInventoryQuantity("  ")).toBeNull();
+    expect(parseInventoryQuantity("0")).toBe(0);
+    expect(parseInventoryQuantity("1,25")).toBe(1.25);
+  });
+  it("calcule l'ecart physique moins theorique", () => {
+    expect(inventoryDifference(null, 4)).toBeNull();
+    expect(inventoryDifference(4, 4)).toBe(0);
+    expect(inventoryDifference(6, 4)).toBe(2);
+    expect(inventoryDifference(1, 4)).toBe(-3);
+  });
+  it("filtre les lignes sans modifier les saisies", () => {
+    const line = { matiere_nom: "Huile de cuisson", matiere_code: "HUI-01", stock_theorique: 2, stock_minimum: 3 };
+    expect(matchesInventoryLineFilter(line, "", "huile", "uncounted")).toBe(true);
+    expect(matchesInventoryLineFilter(line, "0", "HUI-01", "differences")).toBe(true);
+    expect(matchesInventoryLineFilter(line, "2", "", "differences")).toBe(false);
+    expect(matchesInventoryLineFilter(line, "2", "", "low")).toBe(true);
   });
 });

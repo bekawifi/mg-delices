@@ -61,3 +61,37 @@ export function formatQuantity(value: number, precision: number, unitCode?: stri
   }).format(value);
   return unitCode ? `${formatted} ${unitCode}` : formatted;
 }
+
+export function parseInventoryQuantity(value: string) {
+  if (value.trim() === "") return null;
+  const parsed = Number(value.replace(",", "."));
+  return Number.isFinite(parsed) ? parsed : Number.NaN;
+}
+
+export function inventoryDifference(counted: number | null, theoretical: number) {
+  return counted === null ? null : counted - theoretical;
+}
+
+export type InventoryLineFilter = "all" | "differences" | "uncounted" | "low";
+
+export function matchesInventoryLineFilter(
+  line: { matiere_nom: string; matiere_code: string; stock_theorique: number; stock_minimum: number },
+  rawCount: string,
+  query: string,
+  filter: InventoryLineFilter,
+) {
+  const normalized = query.trim().toLocaleLowerCase("fr");
+  const counted = parseInventoryQuantity(rawCount);
+  const difference = counted === null || Number.isNaN(counted)
+    ? null
+    : inventoryDifference(counted, Number(line.stock_theorique));
+  const matchesQuery = !normalized
+    || line.matiere_nom.toLocaleLowerCase("fr").includes(normalized)
+    || line.matiere_code.toLocaleLowerCase("fr").includes(normalized);
+  return matchesQuery && (
+    filter === "all"
+    || (filter === "differences" && difference !== null && difference !== 0)
+    || (filter === "uncounted" && counted === null)
+    || (filter === "low" && Number(line.stock_theorique) <= Number(line.stock_minimum))
+  );
+}

@@ -21,9 +21,11 @@ export interface RecipeOverview {
   recette_nom: string | null; rendement_quantite: number | null; cout_matieres: number; ingredients: RecipeIngredient[]
 }
 export interface InventoryLine {
-  id: string; matiere_id: string; matiere_nom: string; unite_code: string; precision_decimale: number
-  stock_theorique: number; quantite_comptee: number | null; ecart: number | null
+  id: string; matiere_id: string; matiere_code: string; matiere_nom: string; unite_code: string
+  precision_decimale: number; stock_theorique: number; stock_minimum: number
+  quantite_comptee: number | null; ecart: number | null; motif: string | null; commentaire: string | null
 }
 export interface InventoryDetail {
-  id: string; numero: string; statut: 'brouillon' | 'valide'; note: string | null; created_at: string; lignes: InventoryLine[]
+  id: string; numero: string; statut: 'brouillon' | 'valide'; note: string | null; created_at: string
+  validated_at: string | null; utilisateur: string; validated_by_name: string | null; lignes: InventoryLine[]
 }

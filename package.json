@@ -23,7 +23,8 @@
     "test:supabase:step9": "node --env-file=.env.test.local supabase/tests/step9.integration.mjs",
     "test:supabase:step10b": "node --env-file=.env.test.local supabase/tests/step10b.integration.mjs",
     "test:supabase:sales-history": "node --env-file=.env.test.local supabase/tests/sales_history.integration.mjs",
-    "test:supabase:quick-customer": "node --env-file=.env.test.local supabase/tests/quick_customer.integration.mjs"
+    "test:supabase:quick-customer": "node --env-file=.env.test.local supabase/tests/quick_customer.integration.mjs",
+    "test:supabase:inventory-sheet": "node --env-file=.env.test.local supabase/tests/inventory_sheet.integration.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
