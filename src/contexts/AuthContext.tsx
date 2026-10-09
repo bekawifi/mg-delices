@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Votre compte est désactivé ou inaccessible. Contactez un administrateur.')
     }
     const loaded = data as Profile
+    if (loaded.is_super_admin) loaded.role = 'super_admin'
     if (!loaded.is_active) {
       await supabase.auth.signOut()
       throw new Error('Votre compte est désactivé. Contactez un administrateur.')
@@ -43,10 +44,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isSupabaseConfigured) { setLoading(false); return }
+    const isAuthCompletion = typeof window !== 'undefined' && window.location.pathname === '/auth/complete'
     supabase.auth.getSession().then(async ({ data, error: sessionError }) => {
       if (sessionError) setError(userMessageFromError(sessionError, 'Impossible de restaurer votre session.'))
       setSession(data.session)
-      if (data.session) {
+      if (data.session && !isAuthCompletion) {
         try { await loadProfile(data.session.user.id) }
         catch (caught) { setError(caught instanceof Error ? caught.message : 'Profil inaccessible') }
       }

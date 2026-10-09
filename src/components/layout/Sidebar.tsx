@@ -21,12 +21,15 @@ import {
   Store,
   Truck,
   Utensils,
+  UserRound,
+  Users,
   X,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import type { Role } from "../../types/database";
 import { useRestaurantSettings } from "../../contexts/RestaurantSettingsContext";
 import { APP_NAME } from "../../lib/version";
+import { hasRoleAccess } from "../../lib/users";
 
 export const navigationLinks = [
   {
@@ -149,6 +152,13 @@ export const navigationLinks = [
     roles: ["admin", "gestionnaire"],
   },
   {
+    to: "/admin/utilisateurs",
+    label: "Utilisateurs",
+    icon: Users,
+    iconClass: "text-emerald-300",
+    roles: ["admin"],
+  },
+  {
     to: "/admin/audit",
     label: "Journal d’audit",
     icon: FileClock,
@@ -161,6 +171,13 @@ export const navigationLinks = [
     icon: Activity,
     iconClass: "text-cyan-400",
     roles: ["admin"],
+  },
+  {
+    to: "/profil",
+    label: "Mon profil",
+    icon: UserRound,
+    iconClass: "text-sky-300",
+    roles: ["super_admin", "admin", "gestionnaire", "caissier", "serveur", "cuisine"],
   },
   {
     to: "/parametres",
@@ -197,7 +214,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
           {navigationLinks
-            .filter((link) => profile && (link.roles as Role[]).includes(profile.role))
+            .filter((link) => profile && hasRoleAccess(profile.role, link.roles as Role[]))
             .map(({ to, label, icon: Icon, iconClass }) => (
               <NavLink
                 key={to}

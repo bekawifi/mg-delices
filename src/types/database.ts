@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'gestionnaire' | 'caissier' | 'serveur' | 'cuisine'
+export type Role = 'super_admin' | 'admin' | 'gestionnaire' | 'caissier' | 'serveur' | 'cuisine'
 export type OrderType = 'sur_place' | 'emporter' | 'livraison'
 export type PaymentMethod = 'especes' | 'orange_money' | 'moov_money' | 'autre'
 
@@ -9,6 +9,8 @@ export interface Profile {
   is_active: boolean
   created_at: string
   updated_at: string
+  last_login_at?: string | null
+  is_super_admin?: boolean
 }
 
 export interface Category {

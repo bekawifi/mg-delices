@@ -8,8 +8,13 @@ describe("permissions menus", () => {
     expect(roles).not.toContain("cuisine");
   });
   it("reserve audit et diagnostic a admin", () => {
-    for (const path of ["/admin/audit", "/admin/diagnostic"])
+    for (const path of ["/admin/utilisateurs", "/admin/audit", "/admin/diagnostic"])
       expect(navigationLinks.find((link) => link.to === path)?.roles).toEqual(["admin"]);
+  });
+  it("propose le profil a tous les roles", () => {
+    expect(navigationLinks.find((link) => link.to === "/profil")?.roles).toEqual([
+      "super_admin", "admin", "gestionnaire", "caissier", "serveur", "cuisine",
+    ]);
   });
 });
 describe("historique des ventes", () => {
