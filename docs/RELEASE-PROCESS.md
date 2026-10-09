@@ -18,15 +18,17 @@ npm.cmd run version:check
 6. Exécuter `npm.cmd run tauri:build`.
 7. Récupérer l’installateur `.exe` et son `.sig` dans `src-tauri/target/release/bundle/nsis/`.
 8. Générer `latest.json` avec `npm.cmd run release:latest -- --sig <fichier.sig> --notes <notes> --pub-date <date-RFC3339>`.
-9. Créer manuellement une GitHub Release et y joindre l’installateur et `latest.json`.
+9. Créer manuellement une GitHub Release et y joindre l’installateur, son `.sig` et `latest.json`.
 10. Sur une machine dédiée équipée d’une version RestoPRO strictement inférieure et signée avec la même paire updater, rechercher puis installer la mise à jour. Le passage MG DELICES 1.0.1 vers RestoPRO 1.1.0 reste une désinstallation/réinstallation à cause du nouvel identifiant Windows.
 11. Vérifier le démarrage, l’absence de console noire, les fonctions principales et la version 1.1.0 affichée.
 
-Aucune release ni aucun workflow de publication automatique n’est déclenché par cette procédure. Le dépôt public futur est `https://github.com/bekawifi/restopro`, branche `main`. Ne pas activer le nouvel endpoint updater avant le renommage réel du dépôt.
+Aucune release ni aucun workflow de publication automatique n’est déclenché par cette procédure. Le dépôt public est `https://github.com/bekawifi/restopro`, branche `main`.
 
 ## `latest.json`
 
 Le manifeste suit le format Tauri 2. Pour Windows x64, utiliser la clé `windows-x86_64`. `pub_date` est une date RFC 3339, l’URL doit être HTTPS et la signature est le contenu texte du `.sig`.
+
+Le fichier racine `latest.json` est un artefact de release éphémère : il est généré localement, validé, puis joint à la GitHub Release. Il est ignoré par Git et ne doit pas être committé, car son contenu actif devient périssable dès la release suivante. Le schéma durable reste documenté dans `docs/latest.example.json`; l’historique réel des manifestes est conservé par les assets des releases GitHub et par l’historique Git antérieur à cette politique.
 
 ```json
 {

@@ -1,6 +1,6 @@
 # Mises à jour Windows RestoPRO
 
-Canal : `stable`. La clé publique réelle et l’endpoint GitHub HTTPS sont configurés dans `src-tauri/tauri.conf.json`. Aucune release n’est encore publiée.
+Canal : `stable`. La clé publique réelle et l’endpoint GitHub HTTPS sont configurés dans `src-tauri/tauri.conf.json`. La release stable RestoPRO 1.1.0 est publiée.
 
 ## Comportement utilisateur
 
@@ -14,7 +14,7 @@ Les erreurs réseau, manifeste, téléchargement, installation et signature sont
 
 ## Configuration de publication
 
-L’endpoint actuellement configuré reste temporairement `https://github.com/bekawifi/mg-delices/releases/latest/download/latest.json` afin de ne pas casser les installations existantes. Il ne devra être remplacé par `https://github.com/bekawifi/restopro/releases/latest/download/latest.json` qu’après le renommage réel du dépôt.
+L’endpoint actif est `https://github.com/bekawifi/restopro/releases/latest/download/latest.json`.
 
 Pour générer le manifeste après le build signé :
 
@@ -22,7 +22,7 @@ Pour générer le manifeste après le build signé :
 npm.cmd run release:latest -- --sig "src-tauri\target\release\bundle\nsis\RestoPRO_1.1.0_x64-setup.exe.sig" --notes "RestoPRO 1.1.0." --pub-date "2026-10-08T00:00:00Z"
 ```
 
-Le script lit uniquement le `.sig`, utilise la version courante et écrit `latest.json` avec l’URL GitHub Release attendue.
+Le script lit uniquement le `.sig`, utilise la version courante et écrit `latest.json` avec l’URL GitHub Release attendue. Ce fichier est un artefact éphémère ignoré par Git : il doit être validé puis téléversé sous ce nom exact dans la release, sans être committé. Le modèle durable reste `docs/latest.example.json`.
 
 Ne pas activer `dangerousInsecureTransportProtocol` ni `allowDowngrades`.
 

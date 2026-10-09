@@ -12,5 +12,8 @@ dist
 *.key
 *.key.pub
 
+# Manifeste updater généré et publié uniquement comme asset GitHub Release
+/latest.json
+
 src-tauri/target/
 supabase/.temp/
