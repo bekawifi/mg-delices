@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageHeader } from "../components/PageHeader";
+import { FormActions } from "../components/forms/FormModal";
 import { supabase } from "../lib/supabase";
 import { userMessageFromError } from "../lib/errors";
 import { formatMoney, formatDateTime } from "../lib/format";
@@ -436,9 +437,7 @@ export function StockPage() {
                   />
                   Matière active
                 </label>
-                <button disabled={busy} className="btn-primary w-full">
-                  {busy && <LoaderCircle className="animate-spin" size={18} />}Enregistrer
-                </button>
+                <FormActions onCancel={() => setModal(null)} busy={busy} />
               </form>
             )}
             {(modal === "entry" || modal === "adjust") && (
@@ -495,9 +494,7 @@ export function StockPage() {
                     onChange={(e) => setOperation({ ...operation, note: e.target.value })}
                   />
                 </div>
-                <button disabled={busy} className="btn-primary w-full">
-                  {busy && <LoaderCircle className="animate-spin" size={18} />}Valider le mouvement
-                </button>
+                <FormActions onCancel={() => setModal(null)} busy={busy} submitLabel="Valider le mouvement" />
               </form>
             )}
             {modal === "movements" && (

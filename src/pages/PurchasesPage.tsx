@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
+import { FormActions } from "../components/forms/FormModal";
 import { supabase } from "../lib/supabase";
 import { userMessageFromError } from "../lib/errors";
 import { formatDateTime, formatMoney } from "../lib/format";
@@ -517,9 +518,7 @@ export function PurchasesPage() {
               <span>{formatMoney(total)}</span>
             </div>
             {error && <p className="mb-3 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-            <button disabled={busy || total <= 0} className="btn-primary w-full">
-              {busy && <LoaderCircle className="animate-spin" size={18} />}Enregistrer le brouillon
-            </button>
+            <FormActions onCancel={() => setEditorOpen(false)} busy={busy} submitLabel="Enregistrer le brouillon" submitDisabled={total <= 0} />
           </form>
         </div>
       )}
@@ -710,9 +709,7 @@ export function PurchasesPage() {
               />
             </div>
             {error && <p className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-            <button disabled={busy} className="btn-primary mt-5 w-full">
-              {busy && <LoaderCircle className="animate-spin" size={18} />}Confirmer
-            </button>
+            <FormActions onCancel={() => setOperation(null)} busy={busy} submitLabel="Confirmer" />
           </form>
         </div>
       )}

@@ -10,7 +10,7 @@ const DashboardPage = lazy(() =>
   import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })),
 );
 const ProductsPage = lazy(() =>
-  import("./pages/ProductsPage").then((m) => ({ default: m.ProductsPage })),
+  import("./pages/ProductManagementPage").then((m) => ({ default: m.ProductManagementPage })),
 );
 const PosPage = lazy(() => import("./pages/PosPage").then((m) => ({ default: m.PosPage })));
 const SalesHistoryPage = lazy(() =>
