@@ -37,7 +37,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJFNEFGQUM0Mjc3QjYyMkIKUldRclluc254UHBLdmdzbGQzejJoR051VmVTUFgxYzBoaGZpellYay9Pc1pjOUF5VzJwQ2JTQ3YK",
       "endpoints": [
-        "https://github.com/bekawifi/mg-delices/releases/latest/download/latest.json"
+        "https://github.com/bekawifi/restopro/releases/latest/download/latest.json"
       ],
       "windows": { "installMode": "passive" }
     }
