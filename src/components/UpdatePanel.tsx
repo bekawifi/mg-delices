@@ -42,7 +42,7 @@ export function UpdatePanel() {
   return <div className="mt-3 space-y-3 text-sm">
     <p className="text-slate-500">Canal : Stable</p>
     {checking && <p role="status">Recherche d’une mise à jour…</p>}
-    {result?.status === 'up-to-date' && <p className="text-emerald-700">MG DELICES est à jour.</p>}
+    {result?.status === 'up-to-date' && <p className="text-emerald-700">RestoPRO est à jour.</p>}
     {result?.status === 'error' && <p className="text-red-700" role="alert">{result.message}</p>}
     {result?.status === 'available' && <div className="rounded-xl bg-emerald-50 p-4">
       <p className="font-bold text-emerald-900">Version {result.version} disponible</p>

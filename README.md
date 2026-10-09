@@ -1,12 +1,12 @@
-# MG DELICES
+# RestoPRO
 
 Application responsive de gestion de restaurant (React, TypeScript, Vite, Supabase et Tailwind CSS).
 
-Version actuelle : **1.0.0**.
+Version actuelle : **1.1.0**.
 
-## Application Windows MG DELICES
+## Application Windows RestoPRO
 
-MG DELICES partage une seule base React/TypeScript entre le navigateur et la coque Windows Tauri 2. L’identifiant définitif est `com.mgdelices.desktop`. La navigation utilise l’historique Web dans le navigateur et un routage par hash dans Tauri afin que le rechargement d’une route ne produise pas de page blanche.
+RestoPRO partage une seule base React/TypeScript entre le navigateur et la coque Windows Tauri 2. L’identifiant de cette nouvelle lignée est `com.restopro.desktop`. Le logiciel est générique ; l’identité de chaque restaurant vient de `restaurant_settings`. Voir `docs/RESTOPRO-DISTRIBUTION.md` pour l’onboarding et la migration depuis MG DELICES 1.0.1.
 
 ### Prérequis Windows
 
@@ -141,4 +141,4 @@ La migration additive `20261006000500_cash_expenses_closing.sql` ajoute les dép
 npm.cmd run test:supabase:step5
 ```
 
-Une caisse ouverte devient obligatoire uniquement pour les flux en espèces. Les paiements mobiles et virements restent séparés de la caisse physique.
+Une session de caisse ouverte est obligatoire pour toute opération financière, quel que soit le mode de paiement. Seuls les paiements en espèces alimentent le journal et le solde physique de caisse ; les autres modes restent rattachés à la session sans créer de mouvement d'espèces.

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Check, ChefHat, Clock3, LoaderCircle, Minus, Plus, Search, Send, ShoppingCart, Trash2, X } from 'lucide-react'
+import { Check, LoaderCircle, Minus, Plus, Printer, Search, Send, ShoppingCart, Trash2, X } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { userMessageFromError } from '../../lib/errors'
 import { formatDateTime, formatMoney } from '../../lib/format'
@@ -8,6 +8,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import type { Category, PaymentMethod, Product } from '../../types/database'
 import type { OrderDetail } from '../../types/orders'
 import type { Customer } from '../../types/customers'
+import { kitchenTicketHtml, printHtml } from '../../lib/printing'
 
 export function OrderDialog({ orderId, onClose, onChanged }: { orderId: string; onClose: () => void; onChanged: () => void }) {
   const { profile } = useAuth()
@@ -78,6 +79,15 @@ export function OrderDialog({ orderId, onClose, onChanged }: { orderId: string; 
     p_commande_id: orderId, p_idempotency_key: key.current, p_remise: discount,
     p_montant_recu: received, p_mode_paiement: payment, p_client_id: customerId,
   }, data => { const sale = data as { numero?: string; reste_a_payer?: number }; setCheckout(false); setNotice(`Vente ${sale.numero || ''} validée · reste dû ${formatMoney(sale.reste_a_payer||0)}.`) })
+  const openCheckout = async () => {
+    const { data, error: cashError } = await supabase.rpc('get_cash_session_summary', { p_session_id: null })
+    if (cashError || !data) return setError('Veuillez ouvrir une session de caisse avant d’effectuer une opération financière.')
+    setReceived(order?.total || 0); setCheckout(true); setError('')
+  }
+  const printKitchen = () => {
+    if (!order) return
+    printHtml(kitchenTicketHtml({ numero: order.numero_commande, table: order.table_nom ? `${order.table_nom} · ${order.table_numero}` : undefined, serveur: order.serveur_nom, date: order.opened_at, lignes: order.lignes.filter(line => line.statut_cuisine !== 'annulee').map(line => ({ quantite: line.quantite, designation: line.nom_produit_snapshot, notes: line.notes || undefined })) }))
+  }
 
   return <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/55" role="dialog" aria-modal="true">
     <button className="absolute inset-0" onClick={onClose} aria-label="Fermer" />
@@ -101,9 +111,10 @@ export function OrderDialog({ orderId, onClose, onChanged }: { orderId: string; 
         {error && <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       </div>
       {order && !picker && !checkout && <footer className="grid gap-2 border-t bg-white p-4 sm:grid-cols-3">
+        <button className="btn-secondary" onClick={printKitchen}><Printer size={18}/>Imprimer bon cuisine</button>
         {canServe && order.lignes.some(line => !line.sent_to_kitchen_at && line.statut_cuisine !== 'annulee') && <button disabled={busy} className="btn-primary" onClick={() => act('send_order_to_kitchen', { p_commande_id: orderId })}><Send size={18}/>Envoyer cuisine</button>}
         {canServe && order.statut === 'prete' && <button disabled={busy} className="btn-primary" onClick={() => act('mark_order_served', { p_commande_id: orderId })}><Check size={18}/>Marquer servie</button>}
-        {canCheckout && order.statut === 'servie' && <button className="btn-primary" onClick={() => { setReceived(order.total); setCheckout(true) }}><ShoppingCart size={18}/>Passer en caisse</button>}
+        {canCheckout && order.statut === 'servie' && <button className="btn-primary" onClick={() => void openCheckout()}><ShoppingCart size={18}/>Passer en caisse</button>}
         {canServe && !['annulee','cloturee'].includes(order.statut) && <button disabled={busy} className="btn-secondary border-red-200 text-red-600 hover:bg-red-50" onClick={() => { if (window.confirm('Annuler toute la commande ?')) void act('cancel_order', { p_commande_id: orderId, p_motif: null }) }}><Trash2 size={18}/>Annuler commande</button>}
       </footer>}
 

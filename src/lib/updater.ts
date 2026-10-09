@@ -77,7 +77,7 @@ export async function checkForUpdate(): Promise<UpdateCheckResult> {
 export async function downloadAndInstallUpdate(
   onProgress: (progress: DownloadProgress) => void,
 ): Promise<{ ok: true } | { ok: false; message: string }> {
-  if (!isDesktopApp()) return { ok: false, message: 'Les mises à jour intégrées ne sont disponibles que dans MG DELICES Desktop.' }
+  if (!isDesktopApp()) return { ok: false, message: 'Les mises à jour intégrées ne sont disponibles que dans RestoPRO Desktop.' }
   if (!pendingUpdate) return { ok: false, message: 'Recherchez d’abord une mise à jour disponible.' }
 
   let progress: DownloadProgress = { phase: 'downloading', downloadedBytes: 0 }

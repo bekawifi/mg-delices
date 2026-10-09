@@ -1,3 +1,4 @@
+import '../../scripts/assert-test-environment.mjs'
 import assert from 'node:assert/strict'
 import { createClient } from '@supabase/supabase-js'
 
@@ -25,7 +26,7 @@ await rpc(admin,'add_stock_entry',{p_matiere_id:materialId,p_quantite:100,p_cout
 const product=await admin.from('produits').insert({nom:`Produit crédit ${suffix}`,prix_vente:5000,cout_estime:500,disponible:true}).select('id').single();assert.ifError(product.error)
 await rpc(admin,'save_recipe',{p_produit_id:product.data.id,p_nom:'Recette crédit',p_rendement:1,p_ingredients:[{matiere_id:materialId,quantite:1}]})
 const clientId=await rpc(admin,'save_customer',{p_id:null,p_nom:`Client crédit ${suffix}`,p_telephone:`70${String(suffix).slice(-7)}`,p_email:null,p_adresse:null,p_plafond_credit:20000,p_actif:true})
-const priorCash=await rpc(admin,'get_cash_session_summary',{p_session_id:null});if(priorCash)await rpc(admin,'close_cash_session',{p_session_id:priorCash.id,p_comptage:[{denomination:1,quantite:Math.max(0,Math.round(Number(priorCash.solde_theorique)))}],p_note:'Préparation crédit sans caisse',p_idempotency_key:crypto.randomUUID()})
+const priorCash=await rpc(admin,'get_cash_session_summary',{p_session_id:null});if(priorCash)await rpc(admin,'close_cash_session',{p_session_id:priorCash.id,p_comptage:[{denomination:1,quantite:Math.max(0,Math.round(Number(priorCash.solde_theorique)))}],p_note:'Préparation crédit',p_idempotency_key:crypto.randomUUID()});await rpc(admin,'open_cash_session',{p_fond_ouverture:0,p_idempotency_key:crypto.randomUUID()})
 
 console.log('Backfill ventes historiques sans créance artificielle')
 const historical=await admin.from('ventes').select('total_final,montant_initial_paye,montant_paye,reste_a_payer,statut_paiement').is('client_id',null);assert.ifError(historical.error)
@@ -100,8 +101,8 @@ const ceilingRace=await Promise.all([cashier.rpc('create_sale',saleArgs(ceilingP
 
 console.log('14/23 Règlement espèces refusé sans session ouverte')
 let cash=await rpc(admin,'get_cash_session_summary',{p_session_id:null});if(cash)await rpc(admin,'close_cash_session',{p_session_id:cash.id,p_comptage:[{denomination:1,quantite:Math.max(0,Math.round(Number(cash.solde_theorique)))}],p_note:'Préparation test Étape 6',p_idempotency_key:crypto.randomUUID()})
-const cashSaleWithoutSession=await cashier.rpc('create_sale',saleArgs(product.data.id,1,null,5000,'especes').args);assert.ok(cashSaleWithoutSession.error);assert.match(cashSaleWithoutSession.error.message,/Aucune caisse/i)
-const cashWithoutSession=await cashier.rpc('add_customer_payment',{p_vente_id:concurrentSale.id,p_montant:500,p_mode_paiement:'especes',p_idempotency_key:crypto.randomUUID(),p_reference:null,p_note:null});assert.ok(cashWithoutSession.error);assert.match(cashWithoutSession.error.message,/Aucune caisse/i)
+const cashSaleWithoutSession=await cashier.rpc('create_sale',saleArgs(product.data.id,1,null,5000,'especes').args);assert.ok(cashSaleWithoutSession.error);assert.match(cashSaleWithoutSession.error.message,/ouvrir une session de caisse/i)
+const cashWithoutSession=await cashier.rpc('add_customer_payment',{p_vente_id:concurrentSale.id,p_montant:500,p_mode_paiement:'especes',p_idempotency_key:crypto.randomUUID(),p_reference:null,p_note:null});assert.ok(cashWithoutSession.error);assert.match(cashWithoutSession.error.message,/ouvrir une session de caisse/i)
 
 console.log('15/23 Règlement espèces intégré à la session ouverte')
 await rpc(admin,'open_cash_session',{p_fond_ouverture:20000,p_idempotency_key:crypto.randomUUID()})
@@ -123,6 +124,8 @@ let partialCashMovement=await admin.from('mouvements_caisse').select('montant').
 assert.equal(Number((await rpc(admin,'get_stock_overview')).find(x=>x.id===materialId).stock_actuel),partialStockBefore-2)
 creditDetail=await assertCreditCoherent(partialClient);assert.equal(Number(creditDetail.points_fidelite),0)
 const currentCash=await rpc(admin,'get_cash_session_summary',{p_session_id:null});await rpc(admin,'close_cash_session',{p_session_id:currentCash.id,p_comptage:[{denomination:1,quantite:Math.max(0,Math.round(Number(currentCash.solde_theorique)))}],p_note:'Test règlement mobile caisse fermée',p_idempotency_key:crypto.randomUUID()})
+const blockedFinalPayments=await Promise.all([cashier.rpc('add_customer_payment',{p_vente_id:partialSale.sale_id,p_montant:6000,p_mode_paiement:'orange_money',p_idempotency_key:crypto.randomUUID(),p_reference:null,p_note:null}),cashier2.rpc('add_customer_payment',{p_vente_id:partialSale.sale_id,p_montant:6000,p_mode_paiement:'moov_money',p_idempotency_key:crypto.randomUUID(),p_reference:null,p_note:null})]);assert.equal(blockedFinalPayments.filter(x=>!x.error).length,0);assert.equal(blockedFinalPayments.filter(x=>x.error).length,2)
+await rpc(admin,'open_cash_session',{p_fond_ouverture:0,p_idempotency_key:crypto.randomUUID()})
 const finalPayments=await Promise.all([cashier.rpc('add_customer_payment',{p_vente_id:partialSale.sale_id,p_montant:6000,p_mode_paiement:'orange_money',p_idempotency_key:crypto.randomUUID(),p_reference:null,p_note:null}),cashier2.rpc('add_customer_payment',{p_vente_id:partialSale.sale_id,p_montant:6000,p_mode_paiement:'moov_money',p_idempotency_key:crypto.randomUUID(),p_reference:null,p_note:null})]);assert.equal(finalPayments.filter(x=>!x.error).length,1);assert.equal(finalPayments.filter(x=>x.error).length,1)
 creditDetail=await assertCreditCoherent(partialClient);assert.equal(Number(creditDetail.encours_credit),0);assert.equal(Number(creditDetail.points_fidelite),10);assert.equal(creditDetail.fidelite.filter(x=>x.vente_id===partialSale.sale_id).length,1)
 assert.equal((await admin.from('mouvements_stock').select('id').eq('reference_id',partialSale.sale_id)).data.length,1)

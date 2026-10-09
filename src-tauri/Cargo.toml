@@ -1,12 +1,12 @@
 [package]
-name = "mg-delices"
-version = "1.0.1"
-description = "MG DELICES - gestion de restaurant"
-authors = ["MG DELICES"]
+name = "restopro"
+version = "1.1.0"
+description = "RestoPRO - gestion professionnelle de restaurant"
+authors = ["RestoPRO"]
 edition = "2021"
 
 [lib]
-name = "mg_delices_lib"
+name = "restopro_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

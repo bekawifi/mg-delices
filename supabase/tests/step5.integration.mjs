@@ -1,4 +1,4 @@
-import assert from'node:assert/strict';import{createClient}from'@supabase/supabase-js';
+import '../../scripts/assert-test-environment.mjs';import assert from'node:assert/strict';import{createClient}from'@supabase/supabase-js';
 const req=['VITE_SUPABASE_URL','VITE_SUPABASE_ANON_KEY','TEST_ADMIN_EMAIL','TEST_ADMIN_PASSWORD','TEST_CASHIER_EMAIL','TEST_CASHIER_PASSWORD','TEST_SERVER_EMAIL','TEST_SERVER_PASSWORD','TEST_KITCHEN_EMAIL','TEST_KITCHEN_PASSWORD','TEST_INACTIVE_EMAIL','TEST_INACTIVE_PASSWORD'];for(const n of req)assert.ok(process.env[n],`Variable manquante : ${n}`);const opt={auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}},client=()=>createClient(process.env.VITE_SUPABASE_URL,process.env.VITE_SUPABASE_ANON_KEY,opt);async function login(e,p){const d=client(),a=await d.auth.signInWithPassword({email:e,password:p});assert.ifError(a.error);return d}async function rpc(d,n,a={}){const r=await d.rpc(n,a);assert.ifError(r.error);return r.data}const admin=await login(process.env.TEST_ADMIN_EMAIL,process.env.TEST_ADMIN_PASSWORD),admin2=await login(process.env.TEST_ADMIN_EMAIL,process.env.TEST_ADMIN_PASSWORD),cashier=await login(process.env.TEST_CASHIER_EMAIL,process.env.TEST_CASHIER_PASSWORD),server=await login(process.env.TEST_SERVER_EMAIL,process.env.TEST_SERVER_PASSWORD),kitchen=await login(process.env.TEST_KITCHEN_EMAIL,process.env.TEST_KITCHEN_PASSWORD),inactive=await login(process.env.TEST_INACTIVE_EMAIL,process.env.TEST_INACTIVE_PASSWORD),suffix=Date.now();
 // Ferme proprement une éventuelle session laissée par un test précédent.
 let prior=await rpc(admin,'get_cash_session_summary',{p_session_id:null});if(prior)await rpc(admin,'close_cash_session',{p_session_id:prior.id,p_comptage:[{denomination:1,quantite:Math.max(0,Math.round(Number(prior.solde_theorique)))}],p_note:'Nettoyage test',p_idempotency_key:crypto.randomUUID()});
@@ -22,7 +22,7 @@ console.log('14/30 Solde théorique exact');const calc=Number(summary.fond_ouver
 console.log('15/30 Clôture juste');const closeKey=crypto.randomUUID(),closed=await rpc(cashier,'close_cash_session',{p_session_id:summary.id,p_comptage:[{denomination:1,quantite:Math.round(calc)}],p_note:'Juste',p_idempotency_key:closeKey});assert.equal(Number(closed.ecart),0);
 console.log('18/30 Double clôture');assert.equal((await rpc(cashier,'close_cash_session',{p_session_id:summary.id,p_comptage:[{denomination:1,quantite:Math.round(calc)}],p_note:null,p_idempotency_key:closeKey})).idempotent_replay,true);
 console.log('4/30 Vente espèces sans session refusée');assert.ok((await cashier.rpc('create_sale',saleArgs('especes'))).error);
-console.log('5/30 Vente Orange Money sans session autorisée');await rpc(cashier,'create_sale',saleArgs('orange_money'));
+console.log('5/30 Vente Orange Money sans session refusée');assert.ok((await cashier.rpc('create_sale',saleArgs('orange_money'))).error);
 console.log('19/30 Mouvement après clôture refusé');assert.ok((await admin.rpc('add_cash_adjustment',{p_type:'entree_manuelle',p_montant:1,p_motif:'Après',p_idempotency_key:crypto.randomUUID()})).error);
 console.log('20/30 Nouvelle session');const s2=await rpc(admin,'open_cash_session',{p_fond_ouverture:100,p_idempotency_key:crypto.randomUUID()});
 console.log('16/30 Écart positif');let c2=await rpc(admin,'close_cash_session',{p_session_id:s2.session_id,p_comptage:[{denomination:1,quantite:110}],p_note:null,p_idempotency_key:crypto.randomUUID()});assert.equal(Number(c2.ecart),10);
@@ -38,5 +38,3 @@ console.log('28/30 Dashboard caisse');const dash=await rpc(admin,'dashboard_cash
 console.log('29/30 Synthèse journalière');const daily=await rpc(admin,'daily_operating_summary',{p_date:new Date().toISOString().slice(0,10)});assert.ok('resultat_operationnel_simplifie'in daily);
 console.log('30/30 Compatibilité RPC historiques');await rpc(admin,'dashboard_stats');await rpc(admin,'get_stock_overview');await rpc(admin,'get_suppliers_balances');
 await Promise.all([admin.auth.signOut(),admin2.auth.signOut(),cashier.auth.signOut(),server.auth.signOut(),kitchen.auth.signOut(),inactive.auth.signOut()]);console.log('Tous les tests d’intégration Étape 5 sont réussis.')
-
-

@@ -6,7 +6,7 @@ for (let index = 2; index < process.argv.length; index += 2) {
   const name = process.argv[index]
   const value = process.argv[index + 1]
   if (!name?.startsWith('--') || value === undefined) {
-    console.error('Usage : npm.cmd run release:latest -- --sig <fichier.sig> --notes <texte> --pub-date <RFC3339> [--output latest.json]')
+    console.error('Usage : npm.cmd run release:latest -- --sig <fichier.sig> --notes <texte> --pub-date <RFC3339> [--repository bekawifi/restopro] [--output latest.json]')
     process.exit(1)
   }
   args.set(name.slice(2), value)
@@ -16,6 +16,7 @@ const sigPath = args.get('sig')
 const notes = args.get('notes')
 const pubDate = args.get('pub-date')
 const outputPath = resolve(args.get('output') ?? 'latest.json')
+const repository = args.get('repository') ?? 'bekawifi/restopro'
 
 if (!sigPath || !notes || !pubDate) {
   console.error('Les options --sig, --notes et --pub-date sont obligatoires.')
@@ -34,8 +35,8 @@ if (!signature || signature.includes('CONTENU_DU_FICHIER_SIG')) {
   process.exit(1)
 }
 
-const fileName = `MG DELICES_${version}_x64-setup.exe`
-const artifactUrl = `https://github.com/bekawifi/mg-delices/releases/download/v${version}/${encodeURIComponent(fileName)}`
+const fileName = `RestoPRO_${version}_x64-setup.exe`
+const artifactUrl = `https://github.com/${repository}/releases/download/v${version}/${encodeURIComponent(fileName)}`
 const manifest = {
   version,
   notes,
@@ -49,5 +50,5 @@ const manifest = {
 }
 
 writeFileSync(outputPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
-console.log(`latest.json généré pour MG DELICES ${version} : ${outputPath}`)
+console.log(`latest.json généré pour RestoPRO ${version} : ${outputPath}`)
 console.log(`Artefact attendu : ${artifactUrl}`)

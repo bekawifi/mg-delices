@@ -1,7 +1,7 @@
 {
-  "name": "mg-delices",
+  "name": "restopro",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,7 +19,13 @@
     "test:supabase:step4": "node --env-file=.env.test.local supabase/tests/step4.integration.mjs",
     "test:supabase:step5": "node --env-file=.env.test.local supabase/tests/step5.integration.mjs",
     "test:supabase:step6": "node --env-file=.env.test.local supabase/tests/step6.integration.mjs",
-    "test:supabase:step7": "node --env-file=.env.test.local supabase/tests/step7.integration.mjs"
+    "test:supabase:step7": "node --env-file=.env.test.local supabase/tests/step7.integration.mjs",
+    "test:supabase:step9": "node --env-file=.env.test.local supabase/tests/step9.integration.mjs",
+    "test:supabase:step10b": "node --env-file=.env.test.local supabase/tests/step10b.integration.mjs",
+    "test:supabase:sales-history": "node --env-file=.env.test.local supabase/tests/sales_history.integration.mjs",
+    "test:supabase:quick-customer": "node --env-file=.env.test.local supabase/tests/quick_customer.integration.mjs",
+    "test:supabase:inventory-sheet": "node --env-file=.env.test.local supabase/tests/inventory_sheet.integration.mjs",
+    "test:supabase:product-images": "node --env-file=.env.test.local supabase/tests/product_images_storage.integration.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",

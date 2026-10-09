@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await supabase.auth.signOut()
       throw new Error('Votre compte est désactivé. Contactez un administrateur.')
     }
+    await supabase.rpc('record_current_user_login')
     setProfile(loaded)
   }
 
