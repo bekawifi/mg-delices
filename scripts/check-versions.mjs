@@ -38,11 +38,11 @@ const expected={
 }
 const invalid=Object.entries(expected).filter(([key,value])=>branding[key]!==value)
 if(invalid.length){console.error('Identité RestoPRO incohérente :');for(const[key,value]of invalid)console.error(`- ${key}: attendu ${value}, reçu ${branding[key]??'introuvable'}`);process.exit(1)}
-if(packageJson.version!=='1.1.0'){console.error(`Version de distribution attendue : 1.1.0, reçue ${packageJson.version}`);process.exit(1)}
+if(packageJson.version!=='1.1.1'){console.error(`Version de distribution attendue : 1.1.1, reçue ${packageJson.version}`);process.exit(1)}
 console.log('Identité RestoPRO cohérente : restopro / RestoPRO / com.restopro.desktop')
 
 const expectedArtifact=`RestoPRO_${packageJson.version}_x64-setup.exe`
-if(expectedArtifact!=='RestoPRO_1.1.0_x64-setup.exe'){console.error(`Nom d’artefact inattendu : ${expectedArtifact}`);process.exit(1)}
+if(expectedArtifact!=='RestoPRO_1.1.1_x64-setup.exe'){console.error(`Nom d’artefact inattendu : ${expectedArtifact}`);process.exit(1)}
 const sourceRoot=new URL('../src/',import.meta.url)
 const sourceFiles=readdirSync(sourceRoot,{recursive:true}).filter(name=>typeof name==='string'&&/\.(ts|tsx)$/.test(name)&&!name.endsWith('.test.ts')&&!name.endsWith('.test.tsx'))
 const forbidden=[]

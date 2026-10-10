@@ -2,7 +2,7 @@
 
 Application responsive de gestion de restaurant (React, TypeScript, Vite, Supabase et Tailwind CSS).
 
-Version actuelle : **1.1.0**.
+Version actuelle : **1.1.1**.
 
 ## Application Windows RestoPRO
 
