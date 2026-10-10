@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://xtctfierkhvphfkuttsr.supabase.co; base-uri 'none'; form-action 'none'; img-src 'self' data:">
+    <title>Activation RestoPRO</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./config.js" defer></script>
+    <script src="./callback.js" defer></script>
+  </head>
+  <body>
+    <main class="card">
+      <h1>RestoPRO</h1>
+      <p>Finalisez l’activation de votre compte ou la récupération de votre mot de passe.</p>
+      <form id="password-form">
+        <label for="password">Nouveau mot de passe</label>
+        <input id="password" type="password" minlength="8" autocomplete="new-password" required>
+        <label for="confirmation">Confirmer le mot de passe</label>
+        <input id="confirmation" type="password" minlength="8" autocomplete="new-password" required>
+        <button id="submit" type="submit">Définir le mot de passe</button>
+      </form>
+      <p id="message" class="muted" role="status" aria-live="polite"></p>
+      <section id="success" class="hidden">
+        <p class="success">Mot de passe défini. La session Web a été fermée.</p>
+        <p>Ouvrez maintenant RestoPRO Desktop et connectez-vous avec votre adresse professionnelle.</p>
+      </section>
+    </main>
+  </body>
+</html>

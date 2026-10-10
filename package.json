@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:production": "node scripts/check-production-env.mjs && npm run build",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "node scripts/tauri-build.mjs",
+    "production:check": "node scripts/check-production-env.mjs",
     "version:check": "node scripts/check-versions.mjs",
     "release:latest": "node scripts/generate-latest.mjs",
     "preview": "vite preview",

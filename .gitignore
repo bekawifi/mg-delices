@@ -3,6 +3,7 @@ dist
 .env
 .env.local
 .env.test.local
+.env.*.local
 .env.development
 .env.production
 !.env.development.example
@@ -17,3 +18,4 @@ dist
 
 src-tauri/target/
 supabase/.temp/
+.deploy/
